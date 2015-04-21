@@ -10,11 +10,17 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -24,6 +30,7 @@ import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -909,6 +916,45 @@ public class MyUtils {
 			values[2] = values[0] + (view.getWidth() * view.getScaleX());
 			values[3] = values[1] + (view.getHeight() * view.getScaleY());
 			return values;
+		}
+	}
+
+	public static class OpenCVUtil {
+		/**
+		 * Show mat as bitmap on image view
+		 * 
+		 * @param targetMat
+		 *            The mat that will be show
+		 * @param targetView
+		 *            The ImageView will show the mat
+		 */
+		public static void showMatAsImage(Mat targetMat, ImageView targetView) {
+			Bitmap bitmap = null;
+			if (targetMat != null) {
+				bitmap = Bitmap.createBitmap(targetMat.width(), targetMat.height(), Config.ARGB_8888);
+				Utils.matToBitmap(targetMat, bitmap);
+			}
+			targetView.setImageBitmap(bitmap);
+		}
+
+		/**
+		 * Combine all MatOfPoint in list into a single one.
+		 * 
+		 * @param contours
+		 *            The target list of MatOfPoint.
+		 * @return The original list with one MatOfPoint.
+		 */
+		public static List<MatOfPoint> combineContour(List<MatOfPoint> contours) {
+			List<org.opencv.core.Point> mixPoints = new ArrayList<org.opencv.core.Point>();
+			for (int k = 0; k < contours.size(); k++) {
+				mixPoints.addAll(contours.get(k).toList());
+				mixPoints.addAll(contours.get(k).toList());
+			}
+			contours.clear();
+			contours.add(new MatOfPoint(mixPoints.toArray(new org.opencv.core.Point[mixPoints.size()])));
+			mixPoints.clear();
+			mixPoints = null;
+			return contours;
 		}
 	}
 
