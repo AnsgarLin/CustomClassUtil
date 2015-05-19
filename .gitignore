@@ -30,6 +30,7 @@ proguard/
 
 # Other Files
 .classpath
+.project
 lint.xml
 project.properties
 proguard-project.txt

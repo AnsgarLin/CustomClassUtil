@@ -32,8 +32,10 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
@@ -50,6 +52,7 @@ import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -66,6 +69,23 @@ import android.widget.Toast;
 
 public class MyUtils {
 	public static String WHITE = "#ffffff";
+
+	public static class LayoutParamsUtil {
+		/**
+		 * Swap LayoutParams with target view
+		 * 
+		 * @param leftLayoutParams
+		 *            The LayoutParams that will be set to the target view.
+		 * @param right
+		 *            The target view.
+		 * @return The target view's old LayoutParams.
+		 */
+		public static android.view.ViewGroup.LayoutParams swapLayoutParam(android.view.ViewGroup.LayoutParams leftLayoutParams, View right) {
+			android.view.ViewGroup.LayoutParams rightLayoutParams = right.getLayoutParams();
+			right.setLayoutParams(leftLayoutParams);
+			return rightLayoutParams;
+		}
+	}
 
 	/**
 	 * Default width and height are WRAP_CONTENT
@@ -177,6 +197,71 @@ public class MyUtils {
 			options.inJustDecodeBounds = false;
 			return BitmapFactory.decodeByteArray(buff, 0, buff.length, options);
 		}
+
+		/**
+		 * Get a bitmap with target size
+		 * 
+		 * @param bitmap
+		 *            The original bitmap
+		 * @param dstW
+		 *            The target width
+		 * @param dstH
+		 *            The target height
+		 * @param recycle
+		 *            true if recycle the origin, false otherwise
+		 * @return The small bitmap with target size
+		 */
+		public static Bitmap getScaleBitmap(Bitmap bitmap, float dstW, float dstH, boolean recycle) {
+			Bitmap cloneBitmap = createMutableBitmap(bitmap);
+
+			android.graphics.Point smallSize = measureSmallSize(dstW, dstH, cloneBitmap.getWidth(), cloneBitmap.getHeight());
+			Bitmap smallBitmap = Bitmap.createScaledBitmap(cloneBitmap, smallSize.x, smallSize.y, false);
+			if (recycle && !bitmap.isRecycled()) {
+				bitmap.recycle();
+			}
+			cloneBitmap.recycle();
+
+			return smallBitmap;
+		}
+
+		public static android.graphics.Point measureSmallSize(float dstW, float dstH, float srcW, float srcH) {
+			float scaleHeight = srcH / dstH;
+			float scaleWidth = srcW / dstW;
+			float finalW = srcW;
+			float finalH = srcH;
+
+			// To get a smaller size, either scaleHeight or scaleWidth need to be greater than 0 as int
+			if (((srcW / scaleHeight) > 0f) && (scaleHeight > 0f) && (scaleHeight > scaleWidth)) {
+				Log.d("Ansgar", "Scale by height");
+				finalW = srcW / scaleHeight;
+				finalH = srcH / scaleHeight;
+			} else if (((srcH / scaleWidth) > 0f) && (scaleWidth > 0f) && (scaleWidth > scaleHeight)) {
+				Log.d("Ansgar", "Scale by width");
+				finalW = srcW / scaleWidth;
+				finalH = srcH / scaleWidth;
+			}
+
+			// Too make the small size is absolutely smaller than the target size, resize again if necessary.
+			if (dstW < finalW) {
+				float scale = finalW / dstW;
+				finalW = dstW;
+				finalH = finalH / scale;
+			} else if (dstH < finalH) {
+				float scale = finalH / dstH;
+				finalH = dstH;
+				finalW = finalW / scale;
+			}
+			return new android.graphics.Point((int) finalW, (int) finalH);
+		}
+
+		public static Bitmap createMutableBitmap(Bitmap bitmap) {
+			Bitmap mutableBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Config.ARGB_4444);
+			Canvas canvas = new Canvas(mutableBitmap);
+			canvas.drawBitmap(bitmap, 0, 0, new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG));
+
+			return mutableBitmap;
+		}
+
 	}
 
 	public static class InputStreamUtil {
@@ -688,7 +773,7 @@ public class MyUtils {
 		/**
 		 * Get bitmap left/top/right/bottom/scaleX/scaleY in ImageView
 		 */
-		public static float[] getBitmapValuesInImageView(ImageView imageView) {
+		public static float[] getBitmapTransStateInImageView(ImageView imageView) {
 			float[] values = new float[9];
 			imageView.getImageMatrix().getValues(values);
 			float[] bounds = new float[6];
