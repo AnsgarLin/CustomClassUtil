@@ -13,7 +13,6 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 import android.util.DisplayMetrics;
@@ -37,54 +36,9 @@ import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MyUtils {
 	public static String WHITE = "#ffffff";
-
-	public static class FileUtil {
-		/**
-		 * Create a directory for specific type and name
-		 */
-		public static File getDir(String type, String name) {
-			File tempDir = null;
-			if (type == Environment.DIRECTORY_PICTURES) {
-				tempDir = new File(Environment.getExternalStoragePublicDirectory(type), name);
-			}
-
-			if (!tempDir.exists()) {
-				tempDir.mkdirs();
-			}
-			return tempDir;
-		}
-	}
-
-	public static class TimerUtil {
-		/**
-		 * Start or Reset timer with given time
-		 */
-		public static Timer start(Timer timer, TimerTask task, long delay) {
-			if (timer != null) {
-				timer.purge();
-				timer.cancel();
-			}
-			timer = new Timer();
-			timer.schedule(task, delay);
-			return timer;
-		}
-
-		/**
-		 * Stop and clear timer
-		 */
-		public static Timer stop(Timer timer) {
-			if (timer != null) {
-				timer.purge();
-				timer.cancel();
-			}
-			return null;
-		}
-	}
 
 	public static class ResourceUtil {
 		/**
