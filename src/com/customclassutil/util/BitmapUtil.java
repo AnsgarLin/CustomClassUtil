@@ -8,8 +8,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
 
-import com.customclassutil.util.MyUtils.InputStreamUtil;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
