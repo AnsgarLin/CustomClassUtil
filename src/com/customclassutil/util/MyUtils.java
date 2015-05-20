@@ -1,27 +1,5 @@
 package com.customclassutil.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
@@ -67,25 +45,30 @@ import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MyUtils {
 	public static String WHITE = "#ffffff";
-
-	public static class LayoutParamsUtil {
-		/**
-		 * Swap LayoutParams with target view
-		 * 
-		 * @param leftLayoutParams
-		 *            The LayoutParams that will be set to the target view.
-		 * @param right
-		 *            The target view.
-		 * @return The target view's old LayoutParams.
-		 */
-		public static android.view.ViewGroup.LayoutParams swapLayoutParam(android.view.ViewGroup.LayoutParams leftLayoutParams, View right) {
-			android.view.ViewGroup.LayoutParams rightLayoutParams = right.getLayoutParams();
-			right.setLayoutParams(leftLayoutParams);
-			return rightLayoutParams;
-		}
-	}
 
 	/**
 	 * Default width and height are WRAP_CONTENT

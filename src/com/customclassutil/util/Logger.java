@@ -3,37 +3,61 @@ package com.customclassutil.util;
 import android.util.Log;
 
 public class Logger {
+	public static boolean LOG = true; 
 
 	public static void d(Class<?> c, String message) {
-		String className = parserClassName(c);
-		if (Util.LOG) {
-			Log.d("EDAM" + ":" + className, message);
+		if (LOG) {
+			Log.d(parserClassName(c), message);
+		}
+	}
+	public static void d(String tag, Class<?> c, String message) {
+		if (LOG) {
+			Log.d(tag + ":" + parserClassName(c), message);
 		}
 	}
 
-	public static void d(String tag, Class<?> c, String message) {
-		String className = parserClassName(c);
-		Log.d(tag + ":" + className, message);
+	public static void e(Class<?> c, String message) {
+		if (LOG) {
+			Log.e(parserClassName(c), message);
+		}
 	}
-
 	public static void e(String tag, Class<?> c, String message) {
-		String className = parserClassName(c);
-		Log.e(tag + ":" + className, message);
+		if (LOG) {
+			Log.e(tag + ":" + parserClassName(c), message);
+		}
 	}
 
+	public static void i(Class<?> c, String message) {
+		if (LOG) {
+			Log.i(parserClassName(c), message);
+		}
+	}
 	public static void i(String tag, Class<?> c, String message) {
-		String className = parserClassName(c);
-		Log.i(tag + ":" + className, message);
+		if (LOG) {
+			Log.i(tag + ":" + parserClassName(c), message);
+		}
 	}
 
+	public static void v(Class<?> c, String message) {
+		if (LOG) {
+			Log.v(parserClassName(c), message);
+		}
+	}
 	public static void v(String tag, Class<?> c, String message) {
-		String className = parserClassName(c);
-		Log.v(tag + ":" + className, message);
+		if (LOG) {
+			Log.v(tag + ":" + parserClassName(c), message);
+		}
 	}
 
+	public static void w(Class<?> c, String message) {
+		if (LOG) {
+			Log.w(parserClassName(c), message);
+		}
+	}
 	public static void w(String tag, Class<?> c, String message) {
-		String className = parserClassName(c);
-		Log.w(tag + ":" + className, message);
+		if (LOG) {
+			Log.w(tag + ":" + parserClassName(c), message);
+		}
 	}
 
 	private static String parserClassName(Class<?> c) {

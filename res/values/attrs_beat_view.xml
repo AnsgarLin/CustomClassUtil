@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="BeatView">
+
+        <!-- Numbers of bar -->
+        <attr name="barCount" format="integer" />
+        <!-- Color of bar -->
+        <attr name="barColor" format="reference|color" />
+        <!-- Use gradient bar -->
+        <attr name="barGradientMode" format="boolean" />
+        <!-- Gradient color of bar that will change between the original color based on changing rage(current height/maximum height) -->
+        <attr name="barGradientColor" format="reference|color" />
+        <!-- Changing rate(current height/maximum height) of gradient color of bar -->
+        <attr name="barGradientColorChangeRate" format="float" />
+        <!-- Numbers of value that will be set to bar's height -->
+        <attr name="barHeightValueCount" format="integer" />
+        <!-- Start value of bar's height in pixel -->
+        <attr name="barHeightStartValue" format="integer" />
+        <!-- Duration of each bar's animation in millisecond -->
+        <attr name="barAnimateDuration" format="integer" />
+        <!-- Margin between each bar -->
+        <attr name="barMarginBetween" format="float" />
+    </declare-styleable>
+
+</resources>
