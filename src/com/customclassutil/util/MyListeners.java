@@ -7,8 +7,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 
 public class MyListeners {
 
@@ -55,6 +57,42 @@ public class MyListeners {
 			public float getRotation() {
 				return mRotation;
 			}
+
+			@Override
+			public boolean equals(Object o) {
+				if (this == o) {
+					return true;
+				}
+
+				if (!(o instanceof TransInfo)) {
+					return false;
+				}
+
+				TransInfo target = (TransInfo) o;
+
+				return (mRotation == target.mRotation) && (mScale == target.mScale)
+						&& (mTranslate == null ? target.mTranslate == null : mTranslate.equals(target.mTranslate));
+			}
+
+			@Override
+			public int hashCode() {
+				// Start with a non-zero constant.
+				int result = 17;
+
+				// Include a hash for each field.
+				result = (31 * result) + Float.floatToIntBits(mScale);
+				result = (31 * result) + Float.floatToIntBits(mRotation);
+				result = (31 * result) + (mTranslate == null ? 0 : mTranslate.hashCode());
+
+				return result;
+			}
+
+			@Override
+			public String toString() {
+				return getClass().getName() + "[" + "Translate = (" + mTranslate.x + ", " + mTranslate.y + ") " + "Scale = " + mScale + " "
+						+ "Rotation = " + mRotation + "]";
+			}
+
 		}
 
 	}
@@ -62,9 +100,12 @@ public class MyListeners {
 	/**
 	 * A simple class to be extended for developing a listener to handle drag/zoom/rotate event in one.<br>
 	 * <strong>Note:</strong> Be aware that a reliable listener for handling drag/zoom/rotate event should always be able to provider user the current
-	 * mode and transition state
+	 * mode and transition state. And always call {@link #onDestroy} to release all references.
 	 */
 	public abstract static class ScaledTouchListenerImpl implements ScaledListener {
+		// The target view
+		protected View mView;
+
 		// Record current mode
 		protected int mMode;
 
@@ -74,16 +115,29 @@ public class MyListeners {
 		// Whether drag event should be triggered on one finger, default is true
 		protected boolean mSingleDrag;
 
+		// Whether rotate event should be triggered, default is true
+		protected boolean mRotatable;
+
 		public ScaledTouchListenerImpl() {
 			mMode = NONE;
 			mTransInfo = new TransInfo();
 			mSingleDrag = true;
+			mRotatable = true;
+		}
+
+		public ScaledTouchListenerImpl(View view) {
+			mView = view;
+			mMode = NONE;
+			mTransInfo = new TransInfo();
+			mSingleDrag = true;
+			mRotatable = true;
 		}
 
 		/**
-		 * Release the target ImageView's reference
+		 * Release the all references
 		 */
 		public void onDestroy() {
+			mView = null;
 			mTransInfo = null;
 		}
 
@@ -91,6 +145,7 @@ public class MyListeners {
 		 * Reset attributes
 		 */
 		public void onReset() {
+			mView = null;
 			mTransInfo = new TransInfo();
 		}
 
@@ -129,6 +184,20 @@ public class MyListeners {
 		}
 
 		/**
+		 * Set the target view to be scaled
+		 */
+		public void setView(View view) {
+			mView = view;
+		}
+
+		/**
+		 * Get the target view to be scaled
+		 */
+		public View getView() {
+			return mView;
+		}
+
+		/**
 		 * Get current mode(Drag/Zoom(Scale))
 		 */
 		public int getMode() {
@@ -138,7 +207,7 @@ public class MyListeners {
 		/**
 		 * Get transition state between each step
 		 */
-		public TransInfo getTranslate() {
+		public TransInfo getTransInfo() {
 			return mTransInfo;
 		}
 
@@ -154,6 +223,20 @@ public class MyListeners {
 		 */
 		public void setSingleDrag(boolean singleDrag) {
 			mSingleDrag = singleDrag;
+		}
+
+		/**
+		 * Get whether rotate event will be triggered
+		 */
+		public boolean isRotatable() {
+			return mRotatable;
+		}
+
+		/**
+		 * Set whether rotate event should be triggered
+		 */
+		public void setRotatable(boolean rotatable) {
+			mRotatable = rotatable;
 		}
 
 		/**
@@ -203,7 +286,8 @@ public class MyListeners {
 
 	/**
 	 * A listener for handling drag/scale/rotate event of the bitmap inside the target ImageView.<br>
-	 * <strong>Note:</strong> The target ImageView's scale type must set to ScaleType.MATRIX.<br>
+	 * <strong>Note:</strong> The target ImageView's LayoutParams should be set to {@link LayoutParams#WRAP_CONTENT} and scale type must set to
+	 * {@link ScaleType#MATRIX}. After using, be aware to use {@link #onDestroy()} to release all references. <br>
 	 * <strong>Usage:</strong> <strong>targetView</strong>.setOnTouchListener(new ScaledImageViewTouchListener())
 	 */
 	public static class ScaledImageViewTouchListener extends ScaledTouchListenerImpl {
@@ -216,6 +300,8 @@ public class MyListeners {
 		// Middle point of two finger point
 		private PointF startMidPoint;
 		private Matrix startMatrix;
+		// Vector of the line between fingers
+		private Vector2D startVector;
 
 		// Record current transition state
 		// Translate
@@ -224,9 +310,21 @@ public class MyListeners {
 		private float tmpScale;
 		// Image matrix
 		private Matrix tmpMatrix;
+		// Rotate
+		private float tmpRotate;
 
 		public ScaledImageViewTouchListener() {
 			super();
+
+			startPoint = new PointF();
+			startMatrix = new Matrix();
+
+			tmpTranlate = new PointF();
+			tmpMatrix = new Matrix();
+		}
+
+		public ScaledImageViewTouchListener(ImageView view) {
+			super(view);
 
 			startPoint = new PointF();
 			startMatrix = new Matrix();
@@ -242,6 +340,10 @@ public class MyListeners {
 
 		@Override
 		public boolean onCustomTouch(View v, MotionEvent event) {
+			if (mView != null) {
+				v = mView;
+			}
+
 			switch (event.getAction() & MotionEvent.ACTION_MASK) {
 			case MotionEvent.ACTION_DOWN:
 				if (mSingleDrag) {
@@ -267,10 +369,21 @@ public class MyListeners {
 						tmpTranlate.y = curPivot.y - startMidPoint.y;
 						// Scale
 						tmpScale = getDistance(event.getX(0), event.getX(1), event.getY(0), event.getY(1)) / startDistance;
+						// Set the current transition state to target view
 						tmpMatrix.postScale(tmpScale, tmpScale, curPivot.x, curPivot.y);
 
 						// Record the current transition state
 						mTransInfo.setScale(tmpScale);
+
+						if (mRotatable) {
+							// Calculate the current transition state
+							// Rotate
+							tmpRotate = startVector.getAngle(new Vector2D(event.getX(1) - event.getX(0), event.getY(1) - event.getY(0)));
+							// Set the current transition state to target view
+							tmpMatrix.postRotate(tmpRotate, v.getWidth() / 2, v.getHeight() / 2);
+							// Record the current transition state
+							mTransInfo.setRotation(tmpRotate);
+						}
 					}
 					// Set the current transition state to target view
 					tmpMatrix.postTranslate(tmpTranlate.x, tmpTranlate.y);
@@ -287,9 +400,13 @@ public class MyListeners {
 				break;
 			case MotionEvent.ACTION_POINTER_DOWN:
 				mMode = ZOOM;
+
 				startDistance = getDistance(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
 				startMidPoint = getMidPoint(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
 				startMatrix.set(((ImageView) v).getImageMatrix());
+				if (mRotatable) {
+					startVector = new Vector2D(event.getX(1) - event.getX(0), event.getY(1) - event.getY(0));
+				}
 
 				tmpMatrix.set(startMatrix);
 
@@ -320,11 +437,10 @@ public class MyListeners {
 	/**
 	 * A listener for handling drag/scale/rotate event of view.<br>
 	 * <strong>Note:</strong> The target view should be contained in a <strong>FrameLayout</strong>, which will be bigger than the target view, or the
-	 * size will be limited by right and bottom bounds while scaling.<br>
+	 * size will be limited by right and bottom bounds while scaling. And be aware to use {@link #onDestroy()} to release all references. <br>
 	 * <strong>Usage:</strong> <strong>TargetFrameLayout</strong>.setOnTouchListener(new ScaledLayoutListener(<strong>targetView</strong>));
 	 */
 	public static class ScaledLayoutListener extends ScaledTouchListenerImpl {
-		protected View mView;
 		// Record current layout state
 		private float mWidth;
 		private float mHeight;
@@ -341,6 +457,7 @@ public class MyListeners {
 		private PointF startMidPoint;
 		// Rotation degree of target view
 		private float startRotate;
+		// Vector of the line between fingers
 		private Vector2D startVector;
 
 		// Record current transition state
@@ -351,6 +468,9 @@ public class MyListeners {
 		// Rotate
 		private float tmpRotate;
 
+		/**
+		 * Be aware to use {@link ScaledTouchListenerImpl#setView(View)} to set the target view
+		 */
 		public ScaledLayoutListener() {
 			super();
 
@@ -360,8 +480,7 @@ public class MyListeners {
 		}
 
 		public ScaledLayoutListener(View view) {
-			super();
-			mView = view;
+			super(view);
 
 			startPoint = new PointF();
 
@@ -371,13 +490,11 @@ public class MyListeners {
 		@Override
 		public void onDestroy() {
 			super.onDestroy();
-			mView = null;
 		}
 
 		@Override
 		public void onReset() {
 			super.onReset();
-			mView = null;
 		}
 
 		@Override
@@ -412,17 +529,24 @@ public class MyListeners {
 						// Shift is based on two things: 1. The width transition with the mid points' position. 2. The transition of mid points.
 						tmpTranslate.set(((mWidth - (mWidth * tmpScale)) * ((startMidPoint.x - mLeft) / mWidth)) + (curPivot.x - startMidPoint.x),
 								((mHeight - (mHeight * tmpScale)) * ((startMidPoint.y - mTop) / mHeight)) + (curPivot.y - startMidPoint.y));
-						// Rotate
-						tmpRotate = startRotate + startVector.getAngle(new Vector2D(event.getX(1) - event.getX(0), event.getY(1) - event.getY(0)));
 
 						// Set the current transition state to target view
 						tmpLayoutParams.width = (int) (mWidth * tmpScale);
 						tmpLayoutParams.height = (int) (mHeight * tmpScale);
-						mView.setRotation(tmpRotate);
 
 						// Record the current transition state
 						mTransInfo.setScale(tmpScale);
-						mTransInfo.setRotation(tmpRotate);
+
+						if (mRotatable) {
+							// Calculate the current transition state
+							// Rotate
+							tmpRotate = startRotate
+									+ startVector.getAngle(new Vector2D(event.getX(1) - event.getX(0), event.getY(1) - event.getY(0)));
+							// Set the current transition state to target view
+							mView.setRotation(tmpRotate);
+							// Record the current transition state
+							mTransInfo.setRotation(tmpRotate);
+						}
 					}
 					// Set the current transition state to target view
 					((FrameLayout.LayoutParams) tmpLayoutParams).leftMargin = (int) (mLeft + tmpTranslate.x);
@@ -445,8 +569,10 @@ public class MyListeners {
 
 				startDistance = getDistance(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
 				startMidPoint = getMidPoint(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
-				startRotate = mView.getRotation();
-				startVector = new Vector2D(event.getX(1) - event.getX(0), event.getY(1) - event.getY(0));
+				if (mRotatable) {
+					startRotate = mView.getRotation();
+					startVector = new Vector2D(event.getX(1) - event.getX(0), event.getY(1) - event.getY(0));
+				}
 
 				break;
 			case MotionEvent.ACTION_POINTER_UP:
@@ -480,13 +606,6 @@ public class MyListeners {
 			mTop = ((FrameLayout.LayoutParams) mView.getLayoutParams()).topMargin;
 		}
 
-		public void setView(View view) {
-			mView = view;
-		}
-
-		public View getView() {
-			return mView;
-		}
 	}
 
 }
