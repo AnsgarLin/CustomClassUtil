@@ -6,10 +6,8 @@ import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -39,18 +37,6 @@ import java.util.List;
 
 public class MyUtils {
 	public static String WHITE = "#ffffff";
-
-	public static class ResourceUtil {
-		/**
-		 * Get a real image size for resource image
-		 */
-		public static Point getActualImageSize(Context context, int resourceID) {
-			BitmapFactory.Options dimensions = new BitmapFactory.Options();
-			dimensions.inJustDecodeBounds = true;
-			BitmapFactory.decodeResource(context.getResources(), resourceID, dimensions);
-			return new Point(dimensions.outWidth, dimensions.outHeight);
-		}
-	}
 
 	public static class TypedValueUtil {
 		/**
