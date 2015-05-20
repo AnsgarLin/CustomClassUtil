@@ -1,7 +1,6 @@
 package com.customclassutil.util;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -30,7 +29,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -52,30 +50,6 @@ import java.util.TimerTask;
 
 public class MyUtils {
 	public static String WHITE = "#ffffff";
-
-	public static class WebViewUtil {
-		/**
-		 * Return a WebView that align setting of text is justify
-		 */
-		public static WebView getWebViewWithAlignJustify(Activity activity, int resourceString) {
-			WebView webView = new WebView(activity);
-			webView.setVerticalScrollBarEnabled(false);
-			webView.loadDataWithBaseURL("",
-					"<![CDATA[<html><head></head><body style=\"text-align:justify;\">" + activity.getResources().getString(resourceString)
-							+ "</body>", "text/html", "utf-8", null);
-			return webView;
-		}
-
-		/**
-		 * Set a exist WebView that align of text is justify
-		 */
-		public static void setWebViewWithAlignJustify(WebView webView, Activity activity, int resourceString) {
-			webView.setVerticalScrollBarEnabled(false);
-			webView.loadDataWithBaseURL("",
-					"<![CDATA[<html><head></head><body style=\"text-align:justify;\">" + activity.getResources().getString(resourceString)
-							+ "</body>", "text/html", "utf-8", null);
-		}
-	}
 
 	public static class SystemUtil {
 		/**
