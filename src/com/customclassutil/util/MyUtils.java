@@ -14,9 +14,6 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.StateListDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -43,9 +40,6 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,41 +52,6 @@ import java.util.TimerTask;
 
 public class MyUtils {
 	public static String WHITE = "#ffffff";
-
-	public static class DrawableUtil {
-		/**
-		 * Get a Drawable from URL
-		 */
-		public static Drawable getDrawableFromURL(URL url) {
-			try {
-				return Drawable.createFromStream((InputStream) url.getContent(), null);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return null;
-		}
-
-		/**
-		 * Get a StateDrawable with press state
-		 */
-		public static StateListDrawable getStateDrawableWithColor(String pressColor, String defaultColor) {
-			StateListDrawable stateListDrawable = new StateListDrawable();
-			stateListDrawable.addState(new int[] { android.R.attr.state_pressed, android.R.attr.state_enabled },
-					new ColorDrawable(Color.parseColor(pressColor)));
-			stateListDrawable.addState(new int[] { -android.R.attr.state_enabled }, new ColorDrawable(Color.parseColor(defaultColor)));
-			return stateListDrawable;
-		}
-
-		/**
-		 * Get a StateDrawable with press state
-		 */
-		public StateListDrawable getStateDrawableWithColor(int pressColor, int defaultColor) {
-			StateListDrawable stateListDrawable = new StateListDrawable();
-			stateListDrawable.addState(new int[] { android.R.attr.state_pressed, android.R.attr.state_enabled }, new ColorDrawable(pressColor));
-			stateListDrawable.addState(new int[] { -android.R.attr.state_enabled }, new ColorDrawable(defaultColor));
-			return stateListDrawable;
-		}
-	}
 
 	public static class WebViewUtil {
 		/**
