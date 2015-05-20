@@ -40,7 +40,6 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import org.opencv.android.Utils;
@@ -67,27 +66,6 @@ import java.util.TimerTask;
 
 public class MyUtils {
 	public static String WHITE = "#ffffff";
-
-	
-	public static class SearchViewUtil {
-		/**
-		 * SearchView will always expand to fix the width of screen
-		 */
-		public static void setWidthToFitWindow(Context context, SearchView searchView) {
-			searchView.setMaxWidth(context.getResources().getDisplayMetrics().widthPixels);
-		}
-
-		/**
-		 * Customized SearView button with image resource
-		 */
-		public static void setSearchButton(SearchView searchView, int resourceId) {
-			ImageView searchHintIcon = (ImageView) searchView.findViewById(searchView.getContext().getResources()
-					.getIdentifier("android:id/search_button", null, null));
-			if (searchHintIcon != null) {
-				searchHintIcon.setImageResource(resourceId);
-			}
-		}
-	}
 
 	public static class BitmapUtil {
 		/**
