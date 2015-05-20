@@ -1,4 +1,4 @@
-package com.customclassutil.util;
+package com.customclassutil.view;
 
 import android.util.AttributeSet;
 
