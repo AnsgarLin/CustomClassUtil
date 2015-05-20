@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Matrix;
 import android.graphics.PointF;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
@@ -15,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
-import android.widget.ListView;
 
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -27,161 +25,6 @@ import java.util.BitSet;
 import java.util.List;
 
 public class MyUtils {
-	public static class ListViewUtil {
-		/**
-		 * Calculate the scroll bar's top-left and bottom-right position on screen with limit
-		 */
-		public static float[] getScrollBarDrawPos(ListView listView, float childH, float dividerH, int childCount, float scrollBarR,
-				float scrollBarW, float scrollBarH, float scrollBarHLimit) {
-			float scrollbarButtom = getScrollBarButtomPos(getScrollOffset(listView, childH, dividerH),
-					calEndScrollY(childCount, childH, dividerH, listView.getHeight()), scrollBarH, listView.getHeight());
-
-			scrollBarH /= ((((childH + dividerH) * childCount) - dividerH) / listView.getHeight());
-
-			if (scrollBarH < scrollBarHLimit) {
-				scrollBarH = scrollBarHLimit;
-			}
-
-			float[] scrollBarPos = new float[4];
-			scrollBarPos[0] = scrollBarR - scrollBarW;
-			scrollBarPos[1] = scrollbarButtom - scrollBarH;
-			scrollBarPos[2] = scrollBarR;
-			scrollBarPos[3] = scrollbarButtom;
-			return scrollBarPos;
-		}
-
-		/**
-		 * Calculate the scroll offset manually by given item view's height and divider's height
-		 */
-		public static float getScrollOffset(ListView listView, float itemViewHeight, float dividerHeight) {
-			float offset;
-			if (listView.getChildAt(0).getTop() < 0) {
-				offset = ((itemViewHeight + dividerHeight) * listView.getFirstVisiblePosition()) + Math.abs(listView.getChildAt(0).getTop());
-			} else if (listView.getChildAt(0).getTop() > 0) {
-				offset = (itemViewHeight * listView.getFirstVisiblePosition()) + (dividerHeight * (listView.getFirstVisiblePosition() - 1))
-						+ Math.abs(listView.getChildAt(0).getTop() - dividerHeight);
-			} else {
-				offset = ((itemViewHeight + dividerHeight) * listView.getFirstVisiblePosition());
-			}
-			return offset;
-		}
-
-		/**
-		 * Calculate the total height of all the views, than calculate the end offset while the list is scroll to the end
-		 */
-		public static float calEndScrollY(int itemCount, float itemH, float dividerH, float viewH) {
-			float totalLength = ((itemH + dividerH) * itemCount) - dividerH;
-			return (((int) (totalLength / viewH) - 1) * viewH) + (totalLength % viewH);
-		}
-
-		/**
-		 * Reflect the offset on the total height of all view to the list height to get the scroll bar offset
-		 */
-		public static float getScrollBarButtomPos(float scrollOffset, float endScrollY, float scrollBarH, float viewH) {
-			return ((scrollOffset / endScrollY) * (viewH - ((scrollOffset / endScrollY) * scrollBarH))) + ((scrollOffset / endScrollY) * scrollBarH);
-		}
-	}
-
-	public static class MathUtil {
-		/**
-		 * Ceiling of the number, accurate to given decimal places
-		 */
-		public static double CeilWithPoint(double num, int decimalAfter) {
-			return Math.ceil(num * Math.pow(10, decimalAfter)) / Math.pow(10, decimalAfter);
-		}
-
-		/**
-		 * Floor of the number, accurate to given decimal places
-		 */
-		public static double FloorWithPoint(double num, int decimalAfter) {
-			return Math.floor(num * Math.pow(10, decimalAfter)) / Math.pow(10, decimalAfter);
-		}
-
-		/**
-		 * Round of the number, accurate to given decimal places
-		 */
-		public static double RoundWithPoint(double num, int decimalAfter) {
-			return Math.round(num * Math.pow(10, decimalAfter)) / Math.pow(10, decimalAfter);
-		}
-
-		/**
-		 * Get distance between two points in 2-dimension
-		 */
-		public static double getDistance(float sX, float tX, float sY, float tY) {
-			float x = sX - tX;
-			float y = sY - tY;
-			return Math.sqrt((x * x) + (y * y));
-		}
-
-		/**
-		 * Get mid-point between two points in 2-dimension
-		 */
-		public static PointF getMidPoint(float sX, float tX, float sY, float tY) {
-			return new PointF((sX + tX) / 2, (sY + tY) / 2);
-		}
-	}
-
-	public static class ImageViewUtil {
-		/**
-		 * Get a matrix by the original and target size, which makes the image to fit the target size. Then move to center
-		 */
-		public static Matrix setMatrix(float targetX, float originX, float targetY, float originY) {
-			float scaleX = targetX / originX;
-			float scaleY = targetY / originY;
-			float scaleFinal = scaleX >= scaleY ? scaleY : scaleX;
-			Matrix matrix = new Matrix();
-			matrix.postScale(scaleFinal, scaleFinal);
-
-			float finalX = originX * scaleFinal;
-			float finalY = originY * scaleFinal;
-
-			if (scaleFinal == scaleX) {
-				matrix.postTranslate(0, (targetY - finalY) / 2f);
-			} else {
-				matrix.postTranslate((targetX - finalX) / 2f, 0);
-			}
-			return matrix;
-		}
-
-		/**
-		 * Get a scaled bitmap base on width
-		 */
-		public static Bitmap scaleBitmapByWidth(Bitmap bitmap, int width) {
-			double scale = (double) bitmap.getWidth() / (double) width;
-			Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, width, (int) (bitmap.getHeight() / scale), false);
-			bitmap.recycle();
-			return newBitmap;
-		}
-
-		/**
-		 * Get bitmap left/top/right/bottom/scaleX/scaleY in ImageView
-		 */
-		public static float[] getBitmapTransStateInImageView(ImageView imageView) {
-			float[] values = new float[9];
-			imageView.getImageMatrix().getValues(values);
-			float[] bounds = new float[6];
-			bounds[0] = values[Matrix.MTRANS_X];
-			bounds[1] = values[Matrix.MTRANS_Y];
-			bounds[2] = (imageView.getWidth() * values[Matrix.MSCALE_X]) + bounds[0];
-			bounds[3] = (imageView.getHeight() * values[Matrix.MSCALE_Y]) + bounds[1];
-			bounds[4] = values[Matrix.MSCALE_X];
-			bounds[5] = values[Matrix.MSCALE_Y];
-			return bounds;
-		}
-
-		/**
-		 * Recycle bitmap in ImageView
-		 */
-		public static void recycleBitmap(ImageView imageView) {
-			if ((BitmapDrawable) imageView.getDrawable() != null) {
-				Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-				if ((bitmap != null) && !bitmap.isRecycled()) {
-					bitmap.recycle();
-				}
-				imageView.setImageBitmap(bitmap = null);
-			}
-		}
-	}
 
 	public static class IntegerUtil {
 		/**
