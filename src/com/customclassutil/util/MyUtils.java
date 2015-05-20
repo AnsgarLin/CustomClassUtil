@@ -39,9 +39,7 @@ import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ImageView;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -70,40 +68,7 @@ import java.util.TimerTask;
 public class MyUtils {
 	public static String WHITE = "#ffffff";
 
-	/**
-	 * Default width and height are WRAP_CONTENT
-	 */
-	public static class RelativeLayoutUtil {
-		/**
-		 * Return a Center-Button RelativeLayout.LayoutParams
-		 */
-		public static RelativeLayout.LayoutParams getCenterBottomLayoutParams() {
-			RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			lp.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
-			lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-			return lp;
-		}
-
-		/**
-		 * Return a Center-Button RelativeLayout.LayoutParams with margin from bottom
-		 */
-		public static RelativeLayout.LayoutParams getCenterBottomLayoutParams(int bottom) {
-			RelativeLayout.LayoutParams lp = getCenterBottomLayoutParams();
-			lp.setMargins(0, 0, 0, bottom);
-			return lp;
-		}
-
-		/**
-		 * Return a RelativeLayout.LayoutParams with margin from left, top, right and bottom
-		 */
-		public static RelativeLayout.LayoutParams getMarginLayoutParams(int left, int top, int right, int bottom) {
-			RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			lp.setMargins(left, top, right, bottom);
-			return lp;
-		}
-
-	}
-
+	
 	public static class SearchViewUtil {
 		/**
 		 * SearchView will always expand to fix the width of screen
