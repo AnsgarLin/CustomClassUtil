@@ -1,6 +1,5 @@
 package com.customclassutil.util;
 
-import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -13,22 +12,15 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
-import android.os.StatFs;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
-import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -50,77 +42,6 @@ import java.util.TimerTask;
 
 public class MyUtils {
 	public static String WHITE = "#ffffff";
-
-	public static class SystemUtil {
-		/**
-		 * Check there has at least "sizeNeed" MB in storage
-		 */
-		@SuppressLint("NewApi")
-		public static Boolean isEnoughAvalibleStorage(int sizeNeed) {
-			StatFs fs = new StatFs(Environment.getExternalStorageDirectory().getAbsolutePath());
-			return (fs.getAvailableBytes() / 1024f / 1024f) >= sizeNeed;
-		}
-
-		/**
-		 * Get LayoutInflater from context service
-		 */
-		public static LayoutInflater getLayoutInflater(Context context) {
-			return (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		}
-
-		/**
-		 * Check whether network connection is available
-		 */
-		public static boolean isNetworkEnabled(Context context) {
-			if (context != null) {
-				NetworkInfo info = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-				if ((info != null) && info.isConnected()) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		/**
-		 * Check whether IME soft input window is open, the input view must the same size as the full screen
-		 */
-		public static boolean isSoftInputWinOpen(View view) {
-			int heightDiff = view.getRootView().getHeight() - view.getHeight();
-			if (heightDiff > 100) { // if more than 100 pixels, its probably a keyboard
-				return true;
-			}
-			return false;
-		}
-
-		/**
-		 * Get device's imei
-		 */
-		public static String getImei(Context context) {
-			try {
-				TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-				return telephonyManager.getDeviceId();
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-
-		/**
-		 * Get current device's os version
-		 */
-		public static int getDeviceSDKVersion() {
-			return Integer.valueOf(Build.VERSION.SDK_INT);
-		}
-	}
-
-	public static class InflateUtil {
-		/**
-		 * Inflate the specific layout, default attach to root is false
-		 */
-		public static View InflateReource(Context context, int resourceID, ViewGroup parent) {
-			return SystemUtil.getLayoutInflater(context).inflate(resourceID, parent, false);
-		}
-	}
 
 	public static class FileUtil {
 		/**
