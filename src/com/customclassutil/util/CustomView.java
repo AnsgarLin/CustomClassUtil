@@ -1,4 +1,4 @@
-package com.customclassutil.rule;
+package com.customclassutil.util;
 
 import android.util.AttributeSet;
 
