@@ -28,11 +28,17 @@ public class TouchListenerUtil {
 			 * Initial the transition state. Use set() method for setting each state
 			 */
 			public TransInfo() {
-				mTranslate = new PointF();
+				mTranslate = new PointF(0f, 0f);
 				mScale = 1;
 				mRotation = 0;
 			}
 
+			public void reset() {
+				mTranslate.set(0f, 0f);
+				mScale = 1;
+				mRotation = 0;
+			}
+			
 			public PointF getTranslate() {
 				return mTranslate;
 			}
@@ -118,21 +124,21 @@ public class TouchListenerUtil {
 		// Whether rotate event should be triggered, default is true
 		protected boolean mRotatable;
 
-		public ScaledTouchListenerImpl() {
-			mMode = NONE;
-			mTransInfo = new TransInfo();
-			mSingleDrag = true;
-			mRotatable = true;
+		public ScaledTouchListenerImpl(View view) {
+			initConfigure(view);
 		}
 
-		public ScaledTouchListenerImpl(View view) {
+		/**
+		 * Set changeable parameters with default value, and will be changed during run time
+		 */
+		private void initConfigure(View view) {
 			mView = view;
 			mMode = NONE;
 			mTransInfo = new TransInfo();
 			mSingleDrag = true;
 			mRotatable = true;
 		}
-
+		
 		/**
 		 * Release the all references
 		 */
@@ -142,11 +148,10 @@ public class TouchListenerUtil {
 		}
 
 		/**
-		 * Reset attributes
+		 * Reset transition state
 		 */
 		public void onReset() {
-			mView = null;
-			mTransInfo = new TransInfo();
+			setTransInfo(new TransInfo());
 		}
 
 		/**
@@ -205,6 +210,11 @@ public class TouchListenerUtil {
 		}
 
 		/**
+		 * Override this method for setting transition state from outside
+		 */
+		public abstract void setTransInfo(TransInfo transInfo);
+		
+		/**
 		 * Get transition state between each step
 		 */
 		public TransInfo getTransInfo() {
@@ -257,8 +267,6 @@ public class TouchListenerUtil {
 
 		/**
 		 * Override this method for handling drag/scale/rotate event.
-		 * 
-		 * @return .
 		 */
 		public abstract boolean onCustomTouch(View v, MotionEvent event);
 
@@ -313,26 +321,19 @@ public class TouchListenerUtil {
 		// Rotate
 		private float tmpRotate;
 
-		public ScaledImageViewTouchListener() {
-			super();
-
-			startPoint = new PointF();
-			startMatrix = new Matrix();
-
-			tmpTranlate = new PointF();
-			tmpMatrix = new Matrix();
-		}
-
 		public ScaledImageViewTouchListener(ImageView view) {
 			super(view);
+			initConfigure();
+		}
 
+		private void initConfigure() {
 			startPoint = new PointF();
 			startMatrix = new Matrix();
 
 			tmpTranlate = new PointF();
 			tmpMatrix = new Matrix();
 		}
-
+		
 		@Override
 		public void onDestroy() {
 			super.onDestroy();
@@ -340,10 +341,6 @@ public class TouchListenerUtil {
 
 		@Override
 		public boolean onCustomTouch(View v, MotionEvent event) {
-			if (mView != null) {
-				v = mView;
-			}
-
 			switch (event.getAction() & MotionEvent.ACTION_MASK) {
 			case MotionEvent.ACTION_DOWN:
 				if (mSingleDrag) {
@@ -431,7 +428,23 @@ public class TouchListenerUtil {
 
 			return true;
 		}
-
+	
+		@Override
+		public void setTransInfo(TransInfo transInfo) {
+			// Set the current transition state to target view
+			tmpMatrix.reset();
+			tmpMatrix.postTranslate(transInfo.getTranslate().x, transInfo.getTranslate().y);
+			mTransInfo.setScale(transInfo.getScale());
+			if (mRotatable) {
+				mTransInfo.setRotation(transInfo.getRotation());
+			}
+			((ImageView) mView).setImageMatrix(tmpMatrix);
+			
+			// Record the current transition state
+			mTransInfo.setTranslate(transInfo.getTranslate().x, transInfo.getTranslate().y);
+			mTransInfo.setScale(transInfo.getScale());
+			mTransInfo.setRotation(transInfo.getRotation());
+		}
 	}
 
 	/**
@@ -467,17 +480,6 @@ public class TouchListenerUtil {
 		private float tmpScale;
 		// Rotate
 		private float tmpRotate;
-
-		/**
-		 * Be aware to use {@link ScaledTouchListenerImpl#setView(View)} to set the target view
-		 */
-		public ScaledLayoutListener() {
-			super();
-
-			startPoint = new PointF();
-
-			tmpTranslate = new PointF();
-		}
 
 		public ScaledLayoutListener(View view) {
 			super(view);
@@ -606,6 +608,22 @@ public class TouchListenerUtil {
 			mTop = ((FrameLayout.LayoutParams) mView.getLayoutParams()).topMargin;
 		}
 
+		@Override
+		public void setTransInfo(TransInfo transInfo) {
+			// Set the current transition state to target view
+			ViewGroup.LayoutParams tmpLayoutParams = mView.getLayoutParams();
+			tmpLayoutParams.width = (int) (tmpLayoutParams.width / mTransInfo.getScale() * transInfo.getScale());
+			tmpLayoutParams.height = (int) (tmpLayoutParams.height / mTransInfo.getScale() * transInfo.getScale());
+			((FrameLayout.LayoutParams) tmpLayoutParams).leftMargin = (int) transInfo.getTranslate().x;
+			((FrameLayout.LayoutParams) tmpLayoutParams).topMargin = (int) transInfo.getTranslate().y;
+			mView.setRotation(transInfo.getRotation());
+			mView.setLayoutParams(tmpLayoutParams);
+
+			// Record the current transition state
+			mTransInfo.setTranslate(transInfo.getTranslate().x, transInfo.getTranslate().y);
+			mTransInfo.setScale(transInfo.getScale());
+			mTransInfo.setRotation(transInfo.getRotation());
+		}
 	}
 
 }
