@@ -2,6 +2,9 @@ package com.custom.java.util;
 
 import android.graphics.PointF;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MathUtil {
 	/**
 	 * Ceiling of the number, accurate to given decimal places
@@ -38,5 +41,20 @@ public class MathUtil {
 	 */
 	public static PointF getMidPoint(float sX, float tX, float sY, float tY) {
 		return new PointF((sX + tX) / 2, (sY + tY) / 2);
+	}
+	
+	/**
+	 * Get factors of target value, include the value itself
+	 */
+	public static List<Integer> getFactors(int val) {
+		List<Integer> factors = new ArrayList<Integer>();
+		for (int i = 1; i <= val / 2; i++) {
+			if (val % i == 0) {
+				factors.add(i);
+			}
+		}
+		factors.add(val);
+		
+		return factors;
 	}
 }

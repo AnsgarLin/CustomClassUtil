@@ -175,7 +175,12 @@ public class CodeStyle {
 	 * Write Short Methods, which means less than 40 lines.
 	 */
 	// No line break before the opening brace.
-	public void exampleMethord() { // Line break after the opening brace.
+	public void exampleMethord(String s) { // Line break after the opening brace.
+		// Check argument first in public method
+		if (!(s instanceof String)) {
+			throw new IllegalArgumentException("Wrong argument type");
+		}
+		
 		/**
 		 * Local variables are declared close to the point they are first used (within reason), to minimize their scope. Local variable declarations
 		 * typically have initializers, or are initialized immediately after declaration.
