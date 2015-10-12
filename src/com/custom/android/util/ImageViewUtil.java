@@ -7,7 +7,8 @@ import android.widget.ImageView;
 
 public class ImageViewUtil {
 	/**
-	 * Get a matrix by the original and target size, which makes the image to fit the target size. Then move to center
+	 * Get a matrix by the original and target size, which makes the image to fit the target size.
+	 * Then move to center
 	 */
 	public static Matrix setMatrix(float targetX, float originX, float targetY, float originY) {
 		float scaleX = targetX / originX;
@@ -54,7 +55,8 @@ public class ImageViewUtil {
 	}
 
 	/**
-	 * Recycle bitmap in ImageView
+	 * Recycle bitmap in ImageView. This method only use when the bitmap is generate by programming
+	 * and set by {@link ImageView#setImageBitmap(Bitmap)}
 	 */
 	public static void recycleBitmap(ImageView imageView) {
 		if ((BitmapDrawable) imageView.getDrawable() != null) {

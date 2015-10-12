@@ -11,8 +11,6 @@
  */
 package com.custom.rule;
 
-import java.util.HashSet;
-import java.util.Set;
 /**
  * Import statements are not line-wrapped.
  * 
@@ -70,8 +68,11 @@ public class CodeStyle {
 	/**
 	 * Access Levels
 	 * 
-	 * Modifier | Class | Package | Subclass | World | public | Y | Y | Y | Y | protected| Y | Y | Y | N | default | Y | Y | N | N | private | Y | N |
-	 * N | N |
+	 * Modifier | Class | Package | Subclass | World |<br>
+	 * public | Y | Y | Y | Y |<br>
+	 * protected| Y | Y | Y | N |<br>
+	 * default | Y | Y | N | N |<br>
+	 * private | Y | N | N | N |<br>
 	 */
 	/**
 	 * Follow Field Naming Conventions
@@ -91,7 +92,8 @@ public class CodeStyle {
 	/*
 	 * Constants
 	 */
-	static final int NUMBER = 5;
+	public static final int NUMBER = 5;
+	public static final String STRING = "string";
 
 	// static final ImmutableList<String> NAMES = ImmutableList.of("Ed", "Ann");
 	// static final Joiner COMMA_JOINER = Joiner.on(','); // because Joiner is immutable
@@ -105,10 +107,6 @@ public class CodeStyle {
 	 */
 	static String nonFinal = "non-final";
 	final String nonStatic = "non-static";
-	static final Set<String> mutableCollection = new HashSet<String>();
-	// static final ImmutableSet<SomeMutableType> mutableElements = ImmutableSet.of(mutable);
-	// static final Logger logger = Logger.getLogger(MyClass.getName());
-	static final String[] nonEmptyArray = { "these", "can", "change" };
 
 	/**
 	 * Class members should be ordered in some logical order
@@ -129,8 +127,7 @@ public class CodeStyle {
 	/**
 	 * When line-wrapping, each line after the first (each continuation line) is indented at least +4(ex: 8) from the original line
 	 */
-	private int[] intArray = new int[] { 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2,
-			3, 0, 1, 2, 3, };
+	private int[] intArray = new int[] { 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, };
 
 	/**
 	 * Never split multiple methods with the same name.
@@ -148,7 +145,8 @@ public class CodeStyle {
 	/**
 	 * An empty block or block-like construct may be closed immediately after it is opened, with no characters or line break in between ({}),
 	 */
-	private void doNothing() {}
+	private void doNothing() {
+	}
 
 	// unless it is part of a multi-block statement like if/else-if/else or try/catch/finally.
 	private void doSomething() {
@@ -180,7 +178,7 @@ public class CodeStyle {
 		if (!(s instanceof String)) {
 			throw new IllegalArgumentException("Wrong argument type");
 		}
-		
+
 		/**
 		 * Local variables are declared close to the point they are first used (within reason), to minimize their scope. Local variable declarations
 		 * typically have initializers, or are initialized immediately after declaration.
@@ -217,6 +215,7 @@ public class CodeStyle {
 			return value;
 		}
 	}
+
 	/**
 	 * Javadoc is not always present on a method that overrides a supertype method.
 	 */

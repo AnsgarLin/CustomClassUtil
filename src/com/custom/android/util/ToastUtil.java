@@ -7,11 +7,12 @@ public class ToastUtil {
 	/**
 	 * Re-trigger a toast by using the same toast instance
 	 */
-	public static Toast restart(Context context, Toast oldToast, String message) {
+	public static Toast restartToast(Context context, Toast oldToast, String message) {
 		if (oldToast != null) {
-			oldToast.cancel();
+			oldToast.setText(message);
+		} else {
+			oldToast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
 		}
-		oldToast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
 		oldToast.show();
 		return oldToast;
 	}
@@ -19,11 +20,12 @@ public class ToastUtil {
 	/**
 	 * Re-trigger a toast by using the same toast instance
 	 */
-	public static Toast restart(Context context, Toast oldToast, int messageID) {
+	public static Toast restartToast(Context context, Toast oldToast, int messageID) {
 		if (oldToast != null) {
-			oldToast.cancel();
+			oldToast.setText(messageID);
+		} else {
+			oldToast = Toast.makeText(context, context.getString(messageID), Toast.LENGTH_SHORT);
 		}
-		oldToast = Toast.makeText(context, context.getString(messageID), Toast.LENGTH_SHORT);
 		oldToast.show();
 		return oldToast;
 	}

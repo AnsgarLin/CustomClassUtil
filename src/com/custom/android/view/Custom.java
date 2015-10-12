@@ -1,13 +1,6 @@
 package com.custom.android.view;
 
-import android.util.AttributeSet;
-
-public interface CustomView {
-	/**
-	 * Set custom value in xml
-	 */
-	void initAttr(AttributeSet attrs);
-
+public interface Custom {
 	/**
 	 * Set stick parameters with default value, and will not be changed during run time
 	 */
@@ -17,11 +10,6 @@ public interface CustomView {
 	 * Set changeable parameters with default value, and will be changed during run time
 	 */
 	void initConfigure();
-
-	/**
-	 * Set view or listener, should always call after setContentView() in onCreate()
-	 */
-	void initView();
 
 	/**
 	 * Override onDetachedFromWindow to Release resource and reference

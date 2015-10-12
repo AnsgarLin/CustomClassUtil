@@ -1,13 +1,13 @@
 package com.custom.android.util;
 
+import java.io.File;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
-
-import java.io.File;
 
 public class UriUtil {
 	/**
@@ -34,7 +34,7 @@ public class UriUtil {
 	}
 
 	/**
-	 * Convert file uri(file://) to content uri(content://)
+	 * Convert content uri(file://) to file uri(content://)
 	 */
 	public static String toFileUri(Context context, Uri contentUri) {
 		String[] proj = { MediaStore.Images.Media.DATA };
